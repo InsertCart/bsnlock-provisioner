@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- For downloaded APKs stored in app cache -->
+    <cache-path
+        name="downloaded_apks"
+        path="." />
+    <!-- For external cache (fallback) -->
+    <external-cache-path
+        name="external_apks"
+        path="." />
+</paths>
