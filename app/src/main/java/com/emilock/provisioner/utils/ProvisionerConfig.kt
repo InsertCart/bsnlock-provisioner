@@ -8,7 +8,7 @@ object ProvisionerConfig {
 
     // ─── APK Download ────────────────────────────────────────────────────────
     // UPDATE THIS to your actual EmiLock APK download URL
-    const val DEFAULT_EMILOCK_APK_URL = "https://your-server.com/emilock.apk"
+    const val DEFAULT_EMILOCK_APK_URL = "https://www.bsnlock.com/emilock.apk"
 
     // APK SHA-256 checksum for verification (Base64-encoded)
     // Generate with: sha256sum emilock.apk | xxd -r -p | base64
@@ -34,7 +34,7 @@ object ProvisionerConfig {
     // ─── Provisioner APK download URL (for the QR code) ─────────────────────
     // This is where the PROVISIONER app itself is hosted — Android downloads this during setup wizard
     // UPDATE THIS to your actual provisioner APK download URL
-    const val PROVISIONER_APK_URL      = "https://your-server.com/emilock-provisioner.apk"
+    const val PROVISIONER_APK_URL      = "https://www.bsnlock.com/emilock-provisioner.apk"
 
     // Provisioner APK checksum (SHA-256, Base64 encoded, URL-safe)
     // UPDATE THIS after each Provisioner APK build
