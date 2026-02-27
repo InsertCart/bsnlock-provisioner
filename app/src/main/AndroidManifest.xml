@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.emilock.provisioner">
+    <!-- ─── Core permissions ──────────────────────────────────────────── -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:name=".ProvisionerApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="EmiLock Setup"
+        android:theme="@style/Theme.EmiLockProvisioner"
+        tools:targetApi="31">
+        <activity
+            android:name=".ui.ProvisioningCompleteActivity"
+            android:exported="false"
+            android:theme="@style/Theme.EmiLockProvisioner.Splash"> <!-- CRITICAL: This is the action the setup wizard sends when DO is provisioned -->
+            <intent-filter>
+                <action android:name="android.app.action.MANAGED_DEVICE_SETUP_ACTION" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter> <!-- Also handles the legacy provisioning complete action -->
+            <intent-filter>
+                <action android:name="android.app.action.PROVISIONING_SUCCESSFUL" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <!-- ── CRITICAL: This tells Android this is a DPC / Device Owner app ── -->
+        <!--
+             The setup wizard reads this meta-data during QR/NFC provisioning.
+             Without it, the app cannot be set as Device Owner via enterprise provisioning.
+        -->
+        <meta-data
+            android:name="android.app.device_admin"
+            android:resource="@xml/device_admin" /> <!-- ── Device Admin Receiver ────────────────────────────────────── -->
+        <receiver
+            android:name=".receivers.ProvisionerAdminReceiver"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin" />
+
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <!-- CRITICAL: This fires when QR/NFC provisioning completes -->
+                <action android:name="android.app.action.PROFILE_PROVISIONING_COMPLETE" />
+                <!-- Device Owner set callback -->
+                <action android:name="android.app.action.DEVICE_OWNER_CHANGED" />
+            </intent-filter>
+        </receiver> <!-- ── QR Code generator activity (run on your office PC/tablet) ── -->
+        <activity
+            android:name=".ui.QRGeneratorActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- ── Boot Receiver (ensures EmiLock is running after reboot) ──── -->
+        <receiver
+            android:name=".receivers.ProvisionerBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver> <!-- File Provider for APK installation on Android 7+ -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+
+</manifest>
