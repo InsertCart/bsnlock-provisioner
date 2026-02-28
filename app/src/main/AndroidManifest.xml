@@ -45,7 +45,7 @@
         -->
         <meta-data
             android:name="android.app.device_admin"
-            android:resource="@xml/device_admin" /> <!-- ── Device Admin Receiver ────────────────────────────────────── -->
+            android:resource="@xml/device_admin" />
         <receiver
             android:name=".receivers.ProvisionerAdminReceiver"
             android:exported="true"

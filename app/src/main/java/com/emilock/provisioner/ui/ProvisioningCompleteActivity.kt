@@ -9,8 +9,6 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -27,25 +25,12 @@ import com.emilock.provisioner.utils.ProvisionerConfig
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/**
- * ProvisioningCompleteActivity
- *
- * This is shown DURING the Android Setup Wizard, after the device is provisioned as
- * a Managed Device. The setup wizard stays running in the background.
- *
- * This activity:
- *  1. Shows "Setting up device protection..." to the user
- *  2. Downloads EmiLock APK silently
- *  3. Installs EmiLock silently (no user prompt, Device Owner privilege)
- *  4. Grants all permissions to EmiLock silently
- *  5. Transfers Device Owner to EmiLock
- *  6. Calls setResult(RESULT_OK) so Setup Wizard knows provisioning is done
- *  7. Finishes → Android Setup Wizard continues to the home screen
- */
 class ProvisioningCompleteActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "EmiLock.SetupActivity"
+        private const val ADMIN_POLL_INTERVAL_MS = 500L
+        private const val ADMIN_POLL_MAX_ATTEMPTS = 20   // 10 seconds total
     }
 
     private lateinit var dpm: DevicePolicyManager
@@ -67,7 +52,6 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
                     onEmiLockInstalled()
                 }
                 android.content.pm.PackageInstaller.STATUS_PENDING_USER_ACTION -> {
-                    // Fallback: user must confirm install
                     val confirmIntent = intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT)
                     confirmIntent?.let { startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
                 }
@@ -98,7 +82,6 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
             startSetupFlow()
         }
 
-        // Register install result receiver
         val filter = IntentFilter("com.emilock.provisioner.INSTALL_COMPLETE")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(installReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
@@ -107,7 +90,6 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
             registerReceiver(installReceiver, filter)
         }
 
-        // Check if EmiLock is already installed (e.g. app was reinstalled/updated)
         if (isEmiLockInstalled()) {
             log("EmiLock already installed — skipping download")
             onEmiLockInstalled()
@@ -122,7 +104,6 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                // ── Phase 1: Download ────────────────────────────────────────
                 log("📥 Downloading EmiLock…")
                 progressBar.isIndeterminate = false
 
@@ -138,23 +119,19 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
                     return@launch
                 }
 
-                // ── Phase 2: Verify checksum ────────────────────────────────
                 log("🔍 Verifying package…")
                 if (!ApkInstaller.verifyChecksum(apkFile, ProvisionerConfig.EMILOCK_APK_CHECKSUM)) {
                     showRetry("Package verification failed.")
                     return@launch
                 }
 
-                // ── Phase 3: Install silently ───────────────────────────────
                 log("📦 Installing EmiLock…")
                 progressBar.isIndeterminate = true
                 val installed = ApkInstaller.installSilently(this@ProvisioningCompleteActivity, apkFile)
                 if (!installed) {
-                    // Fallback to dialog install
                     log("Falling back to dialog install…")
                     ApkInstaller.installWithDialog(this@ProvisioningCompleteActivity, apkFile)
                 }
-                // Wait for installReceiver to fire
 
             } catch (e: Exception) {
                 Log.e(TAG, "Setup flow error: ${e.message}")
@@ -163,27 +140,42 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Called after EmiLock is confirmed installed.
-     * Grant permissions + transfer Device Owner.
-     */
     private fun onEmiLockInstalled() {
         lifecycleScope.launch {
-            // ── Phase 4: Grant all permissions to EmiLock silently ───────────
+            // Phase 4: Grant all permissions silently
             log("🔐 Granting permissions to EmiLock…")
             PermissionGranter.grantAllToPackage(
                 dpm, admin, this@ProvisioningCompleteActivity,
                 ProvisionerConfig.EMILOCK_PACKAGE
             )
 
-            delay(1000)
+            delay(500)
 
-            // ── Phase 5: Launch EmiLock so it can activate its DeviceAdminReceiver ──
+            // Phase 5: Launch EmiLock with "from_provisioner" so it activates its admin
             log("🚀 Activating EmiLock admin…")
             launchEmiLockForAdminActivation()
-            delay(3000) // Give EmiLock time to activate its admin
 
-            // ── Phase 6: Transfer Device Owner ───────────────────────────────
+            // FIX #6: Poll instead of fixed delay — wait up to 10 seconds for admin to become active
+            log("⏳ Waiting for EmiLock admin to activate…")
+            val emiLockAdmin = ComponentName(
+                ProvisionerConfig.EMILOCK_PACKAGE,
+                ProvisionerConfig.EMILOCK_ADMIN_RECEIVER
+            )
+            var adminActive = false
+            repeat(ADMIN_POLL_MAX_ATTEMPTS) { attempt ->
+                if (!adminActive) {
+                    delay(ADMIN_POLL_INTERVAL_MS)
+                    adminActive = try { dpm.isAdminActive(emiLockAdmin) } catch (_: Exception) { false }
+                    log("⏳ Admin check ${attempt + 1}/$ADMIN_POLL_MAX_ATTEMPTS: active=$adminActive")
+                }
+            }
+
+            if (!adminActive) {
+                log("⚠️ EmiLock admin not active after 10s — trying transfer anyway")
+                // Still attempt — some devices activate admin async
+            }
+
+            // Phase 6: Transfer Device Owner
             log("🔄 Transferring Device Owner to EmiLock…")
             val transferred = OwnershipTransferManager.transferToEmiLock(
                 this@ProvisioningCompleteActivity, dpm
@@ -194,24 +186,19 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
                 delay(1500)
                 finishProvisioning()
             } else {
-                // Transfer failed — EmiLock admin might not be active yet
                 log("⚠️ Transfer failed — EmiLock must activate its admin first.")
-                showRetry("Tap Retry after EmiLock admin is activated.")
+                showRetry("Tap Retry to complete setup.")
             }
         }
     }
 
-    /**
-     * Launch EmiLock so it can register its DeviceAdminReceiver.
-     * EmiLock's MainActivity will auto-activate its admin on first launch.
-     */
     private fun launchEmiLockForAdminActivation() {
         try {
             val launchIntent = packageManager.getLaunchIntentForPackage(
                 ProvisionerConfig.EMILOCK_PACKAGE
             )?.apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                putExtra("from_provisioner", true)
+                putExtra("from_provisioner", true)  // EmiLock reads this to activate admin
             }
             launchIntent?.let { startActivity(it) }
         } catch (e: Exception) {
@@ -219,10 +206,6 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Signal to the Android Setup Wizard that our DPC setup is done.
-     * The wizard will then proceed to the home screen.
-     */
     private fun finishProvisioning() {
         setResult(RESULT_OK)
         finish()
@@ -235,9 +218,7 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
 
     private fun log(message: String) {
         Log.d(TAG, message)
-        runOnUiThread {
-            tvStatus.text = message
-        }
+        runOnUiThread { tvStatus.text = message }
     }
 
     private fun showRetry(message: String) {
