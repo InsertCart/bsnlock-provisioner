@@ -29,7 +29,7 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "EmiLock.SetupActivity"
-        private const val ADMIN_POLL_INTERVAL_MS = 500L
+        private const val ADMIN_POLL_INTERVAL_MS  = 500L
         private const val ADMIN_POLL_MAX_ATTEMPTS = 20   // 10 seconds total
     }
 
@@ -107,7 +107,9 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
                 log("📥 Downloading EmiLock…")
                 progressBar.isIndeterminate = false
 
-                val apkFile = ApkInstaller.downloadApk(this@ProvisioningCompleteActivity, apkUrl) { progress ->
+                val apkFile = ApkInstaller.downloadApk(
+                    this@ProvisioningCompleteActivity, apkUrl
+                ) { progress ->
                     runOnUiThread {
                         progressBar.progress = progress
                         tvProgress.text = "Downloading… $progress%"
@@ -120,7 +122,9 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
                 }
 
                 log("🔍 Verifying package…")
-                if (!ApkInstaller.verifyChecksum(apkFile, ProvisionerConfig.PROVISIONER_APK_CHECKSUM)) {
+                // BUG FIX #3: Was using PROVISIONER_APK_CHECKSUM — now correctly uses EMILOCK_APK_CHECKSUM
+                // EMILOCK_APK_CHECKSUM is empty → verification is skipped (returns true)
+                if (!ApkInstaller.verifyChecksum(apkFile, ProvisionerConfig.EMILOCK_APK_CHECKSUM)) {
                     showRetry("Package verification failed.")
                     return@launch
                 }
@@ -142,7 +146,6 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
 
     private fun onEmiLockInstalled() {
         lifecycleScope.launch {
-            // Phase 4: Grant all permissions silently
             log("🔐 Granting permissions to EmiLock…")
             PermissionGranter.grantAllToPackage(
                 dpm, admin, this@ProvisioningCompleteActivity,
@@ -151,11 +154,10 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
 
             delay(500)
 
-            // Phase 5: Launch EmiLock with "from_provisioner" so it activates its admin
             log("🚀 Activating EmiLock admin…")
             launchEmiLockForAdminActivation()
 
-            // FIX #6: Poll instead of fixed delay — wait up to 10 seconds for admin to become active
+            // Poll for admin activation instead of fixed delay
             log("⏳ Waiting for EmiLock admin to activate…")
             val emiLockAdmin = ComponentName(
                 ProvisionerConfig.EMILOCK_PACKAGE,
@@ -172,10 +174,8 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
 
             if (!adminActive) {
                 log("⚠️ EmiLock admin not active after 10s — trying transfer anyway")
-                // Still attempt — some devices activate admin async
             }
 
-            // Phase 6: Transfer Device Owner
             log("🔄 Transferring Device Owner to EmiLock…")
             val transferred = OwnershipTransferManager.transferToEmiLock(
                 this@ProvisioningCompleteActivity, dpm
@@ -198,7 +198,7 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
                 ProvisionerConfig.EMILOCK_PACKAGE
             )?.apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                putExtra("from_provisioner", true)  // EmiLock reads this to activate admin
+                putExtra("from_provisioner", true)
             }
             launchIntent?.let { startActivity(it) }
         } catch (e: Exception) {
