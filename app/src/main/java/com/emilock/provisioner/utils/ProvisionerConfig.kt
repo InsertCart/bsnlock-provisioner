@@ -38,7 +38,7 @@ object ProvisionerConfig {
 
     // Provisioner APK checksum (SHA-256, Base64 encoded, URL-safe)
     // UPDATE THIS after each Provisioner APK build
-    const val PROVISIONER_APK_CHECKSUM = ""  // Set this before production
+    const val PROVISIONER_APK_CHECKSUM = "j1l-8FpEXLqvuDCeerVbg_89OLnlRjsybPYubRQ3mrY"
 
     // ─── Provisioner admin component (for QR code) ──────────────────────────
     const val PROVISIONER_ADMIN_COMPONENT = "com.emilock.provisioner/.receivers.ProvisionerAdminReceiver"
