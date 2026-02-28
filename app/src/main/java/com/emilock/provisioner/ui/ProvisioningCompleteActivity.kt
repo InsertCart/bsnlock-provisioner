@@ -120,7 +120,7 @@ class ProvisioningCompleteActivity : AppCompatActivity() {
                 }
 
                 log("🔍 Verifying package…")
-                if (!ApkInstaller.verifyChecksum(apkFile, ProvisionerConfig.EMILOCK_APK_CHECKSUM)) {
+                if (!ApkInstaller.verifyChecksum(apkFile, ProvisionerConfig.PROVISIONER_APK_CHECKSUM)) {
                     showRetry("Package verification failed.")
                     return@launch
                 }

@@ -8,6 +8,21 @@ android {
     namespace = "com.emilock.provisioner"
     compileSdk = 35
 
+    signingConfigs {
+        create("release") {
+            // It's better to use a relative path or project property
+            val keystoreFile = rootProject.file("KeyFileBSNLock-provisioner.jks")
+            if (keystoreFile.exists()) {
+                storeFile = keystoreFile
+            } else {
+                // Fallback to absolute path or just log a warning if needed
+                storeFile = file("D:/Server/KeyFileBSNLock-provisioner")
+            }
+            storePassword = "sandeep500"
+            keyAlias = "bsnlock"
+            keyPassword = "sandeep500"
+        }
+    }
     defaultConfig {
         applicationId = "com.emilock.provisioner"
         minSdk = 28
@@ -21,6 +36,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

@@ -62,15 +62,15 @@
                 <action android:name="android.app.action.DEVICE_OWNER_CHANGED" />
             </intent-filter>
         </receiver> <!-- ── QR Code generator activity (run on your office PC/tablet) ── -->
-        <activity
-            android:name=".ui.QRGeneratorActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--        <activity-->
+<!--            android:name=".ui.QRGeneratorActivity"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity> <!-- ── Boot Receiver (ensures EmiLock is running after reboot) ──── -->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity> &lt;!&ndash; ── Boot Receiver (ensures EmiLock is running after reboot) ──── &ndash;&gt;-->
         <receiver
             android:name=".receivers.ProvisionerBootReceiver"
             android:exported="true">

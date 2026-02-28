@@ -4,7 +4,8 @@ object ProvisionerConfig {
 
     // ─── EmiLock target package ─────────────────────────────────────────────
     const val EMILOCK_PACKAGE   = "com.emilock.app"
-    const val EMILOCK_ADMIN_RECEIVER = "com.emilock.app.MyDeviceAdminReceiver"
+    const val EMILOCK_ADMIN_RECEIVER = "com.emilock.provisioner/com.emilock.provisioner.receivers.ProvisionerAdminReceiver"
+   // const val EMILOCK_ADMIN_RECEIVER = "com.emilock.app.MyDeviceAdminReceiver"
 
     // ─── APK Download ────────────────────────────────────────────────────────
     // UPDATE THIS to your actual EmiLock APK download URL
@@ -34,11 +35,11 @@ object ProvisionerConfig {
     // ─── Provisioner APK download URL (for the QR code) ─────────────────────
     // This is where the PROVISIONER app itself is hosted — Android downloads this during setup wizard
     // UPDATE THIS to your actual provisioner APK download URL
-    const val PROVISIONER_APK_URL      = "https://www.bsnlock.com/emilock-provisioner.apk"
+    const val PROVISIONER_APK_URL      = "https://www.bsnlock.com/bsnlockprovisioner.apk"
 
     // Provisioner APK checksum (SHA-256, Base64 encoded, URL-safe)
     // UPDATE THIS after each Provisioner APK build
-    const val PROVISIONER_APK_CHECKSUM = "j1l-8FpEXLqvuDCeerVbg_89OLnlRjsybPYubRQ3mrY"
+    const val PROVISIONER_APK_CHECKSUM = "xNTTnB0pUlk1trCNOBnzlahq2MVItfffCNb0h8ZT3as="
 
     // ─── Provisioner admin component (for QR code) ──────────────────────────
     const val PROVISIONER_ADMIN_COMPONENT = "com.emilock.provisioner/.receivers.ProvisionerAdminReceiver"
