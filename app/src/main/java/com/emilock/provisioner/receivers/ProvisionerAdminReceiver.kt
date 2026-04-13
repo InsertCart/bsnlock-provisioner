@@ -56,7 +56,7 @@ class ProvisionerAdminReceiver : DeviceAdminReceiver() {
             dpm.addUserRestriction(admin, android.os.UserManager.DISALLOW_FACTORY_RESET)
             dpm.addUserRestriction(admin, android.os.UserManager.DISALLOW_SAFE_BOOT)
             dpm.addUserRestriction(admin, android.os.UserManager.DISALLOW_USB_FILE_TRANSFER)
-            dpm.addUserRestriction(admin, android.os.UserManager.DISALLOW_MODIFY_ACCOUNTS)
+            // dpm.addUserRestriction(admin, android.os.UserManager.DISALLOW_MODIFY_ACCOUNTS)
             dpm.setMaximumTimeToLock(admin, 0)
             Log.d(TAG, "Initial DO restrictions applied")
         } catch (e: Exception) {

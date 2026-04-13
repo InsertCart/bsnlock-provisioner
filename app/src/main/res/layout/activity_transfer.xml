@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1A1A2E">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Header -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EmiLock Setup"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Transfer device ownership to EmiLock"
+            android:textColor="#AAAAAA"
+            android:textSize="14sp"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Status Cards -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DEVICE STATUS"
+            android:textColor="#7EB2FF"
+            android:textSize="11sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Device Owner status row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#22FFFFFF"
+            android:padding="16dp"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:id="@+id/ivStatusDO"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="12dp"
+                android:src="@android:drawable/presence_offline" />
+
+            <TextView
+                android:id="@+id/tvStatusDO"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:text="Checking…" />
+        </LinearLayout>
+
+        <!-- EmiLock status row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#22FFFFFF"
+            android:padding="16dp"
+            android:layout_marginBottom="24dp">
+
+            <ImageView
+                android:id="@+id/ivStatusEmiLock"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="12dp"
+                android:src="@android:drawable/presence_offline" />
+
+            <TextView
+                android:id="@+id/tvStatusEmiLock"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:text="Checking…" />
+        </LinearLayout>
+
+        <!-- Content that shows when ready / working -->
+        <LinearLayout
+            android:id="@+id/layoutReady"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Install EmiLock button (shown only when not installed) -->
+            <Button
+                android:id="@+id/btnInstallEmiLock"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="DOWNLOAD EMILOCK APK"
+                android:backgroundTint="#7EB2FF"
+                android:textColor="#1A1A2E"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone" />
+
+            <!-- Transfer button -->
+            <Button
+                android:id="@+id/btnTransfer"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="TRANSFER TO EMILOCK"
+                android:backgroundTint="#4CAF50"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:enabled="false"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Progress bar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:indeterminate="true"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone" />
+
+            <!-- Log output -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TRANSFER LOG"
+                android:textColor="#7EB2FF"
+                android:textSize="11sp"
+                android:textAllCaps="true"
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tvLog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="#AAAAAA"
+                android:textSize="12sp"
+                android:fontFamily="monospace"
+                android:lineSpacingExtra="4dp"
+                android:background="#11FFFFFF"
+                android:padding="12dp" />
+
+        </LinearLayout>
+
+        <!-- Success screen (shown after transfer completes) -->
+        <LinearLayout
+            android:id="@+id/layoutDone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="24dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="✅"
+                android:textSize="64sp"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Setup Complete!"
+                android:textColor="#4CAF50"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EmiLock is now active on this device.\nHand the phone to the customer."
+                android:textColor="#AAAAAA"
+                android:textSize="14sp"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

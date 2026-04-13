@@ -2,17 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.emilock.provisioner">
-    <!-- ─── Core permissions ──────────────────────────────────────────── -->
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" />
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
@@ -23,29 +17,46 @@
         android:label="EmiLock Setup"
         android:theme="@style/Theme.EmiLockProvisioner"
         tools:targetApi="31">
+
+        <!--
+            NEW FLOW:
+            ProvisioningCompleteActivity → just calls setResult(OK) → Setup Wizard finishes fast
+            TransferActivity             → dealer-facing screen, taps button to transfer DO to EmiLock
+        -->
+
+        <!-- Shown during Setup Wizard — finishes immediately, no download -->
         <activity
             android:name=".ui.ProvisioningCompleteActivity"
             android:exported="false"
-            android:theme="@style/Theme.EmiLockProvisioner.Splash"> <!-- CRITICAL: This is the action the setup wizard sends when DO is provisioned -->
+            android:theme="@style/Theme.EmiLockProvisioner.Splash">
             <intent-filter>
                 <action android:name="android.app.action.MANAGED_DEVICE_SETUP_ACTION" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter> <!-- Also handles the legacy provisioning complete action -->
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.app.action.PROVISIONING_SUCCESSFUL" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <!-- ── CRITICAL: This tells Android this is a DPC / Device Owner app ── -->
-        <!--
-             The setup wizard reads this meta-data during QR/NFC provisioning.
-             Without it, the app cannot be set as Device Owner via enterprise provisioning.
-        -->
-        <meta-data
-            android:name="android.app.device_admin"
-            android:resource="@xml/device_admin" />
+
+        <!-- LAUNCHER: Dealer opens this after EmiLock is installed to do the transfer -->
+        <activity
+            android:name=".ui.TransferActivity"
+            android:exported="true"
+            android:label="EmiLock Setup">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- QR Generator — run on your office device to generate QR codes for new batches -->
+<!--        <activity-->
+<!--            android:name=".ui.QRGeneratorActivity"-->
+<!--            android:exported="true"-->
+<!--            android:label="QR Generator" />-->
+
+        <!-- Device Admin Receiver — CRITICAL for Device Owner provisioning -->
         <receiver
             android:name=".receivers.ProvisionerAdminReceiver"
             android:exported="true"
@@ -53,31 +64,23 @@
             <meta-data
                 android:name="android.app.device_admin"
                 android:resource="@xml/device_admin" />
-
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
-                <!-- CRITICAL: This fires when QR/NFC provisioning completes -->
                 <action android:name="android.app.action.PROFILE_PROVISIONING_COMPLETE" />
-                <!-- Device Owner set callback -->
                 <action android:name="android.app.action.DEVICE_OWNER_CHANGED" />
             </intent-filter>
-        </receiver> <!-- ── QR Code generator activity (run on your office PC/tablet) ── -->
-<!--        <activity-->
-<!--            android:name=".ui.QRGeneratorActivity"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
+        </receiver>
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity> &lt;!&ndash; ── Boot Receiver (ensures EmiLock is running after reboot) ──── &ndash;&gt;-->
+        <!-- Boot Receiver — ensures EmiLock launches after reboot -->
         <receiver
             android:name=".receivers.ProvisionerBootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-        </receiver> <!-- File Provider for APK installation on Android 7+ -->
+        </receiver>
+
+        <!-- File Provider — needed for APK install fallback dialog -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -87,6 +90,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- DPC meta-data — tells Android this is a Device Policy Controller -->
+        <meta-data
+            android:name="android.app.device_admin"
+            android:resource="@xml/device_admin" />
+
     </application>
 
 </manifest>
