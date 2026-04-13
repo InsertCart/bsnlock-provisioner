@@ -1,4 +1,4 @@
-package com.emilock.provisioner
+package com.bsnlock.provisioner
 
 import org.junit.Test
 

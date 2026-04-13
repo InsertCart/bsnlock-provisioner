@@ -1,4 +1,4 @@
-package com.emilock.provisioner.receivers
+package com.bsnlock.provisioner.receivers
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -13,7 +13,7 @@ class ProvisionerBootReceiver : BroadcastReceiver() {
         // Launch EmiLock if installed
         try {
             val launchIntent = context.packageManager
-                .getLaunchIntentForPackage("com.emilock.app")
+                .getLaunchIntentForPackage("com.bsnlock.app")
                 ?.apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
             launchIntent?.let { context.startActivity(it) }
         } catch (e: Exception) {

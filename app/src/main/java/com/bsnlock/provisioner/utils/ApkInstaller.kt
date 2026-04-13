@@ -1,7 +1,5 @@
-package com.emilock.provisioner.utils
+package com.bsnlock.provisioner.utils
 
-import android.app.admin.DevicePolicyManager
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -29,7 +27,7 @@ import java.util.Base64
 object ApkInstaller {
 
     private const val TAG      = "EmiLock.Installer"
-    private const val APK_NAME = "emilock.apk"
+    private const val APK_NAME = "bsnlock.apk"
 
     /**
      * Download EmiLock APK from URL.
@@ -136,7 +134,7 @@ object ApkInstaller {
             }
 
             // Create a PendingIntent for install result callback
-            val installIntent = Intent("com.emilock.provisioner.INSTALL_COMPLETE").apply {
+            val installIntent = Intent("com.bsnlock.provisioner.INSTALL_COMPLETE").apply {
                 setPackage(context.packageName)
             }
             val pendingFlags  = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)

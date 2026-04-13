@@ -1,4 +1,4 @@
-package com.emilock.provisioner.utils
+package com.bsnlock.provisioner.utils
 
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
@@ -40,7 +40,7 @@ object OwnershipTransferManager {
 
         val fromAdmin = ComponentName(
             context.packageName,
-            "com.emilock.provisioner.receivers.ProvisionerAdminReceiver"
+            "com.bsnlock.provisioner.receivers.ProvisionerAdminReceiver"
         )
 
         val toAdmin = ComponentName(

@@ -1,4 +1,4 @@
-package com.emilock.provisioner.receivers
+package com.bsnlock.provisioner.receivers
 
 import android.app.admin.DeviceAdminReceiver
 import android.app.admin.DevicePolicyManager
@@ -7,9 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.PersistableBundle
 import android.util.Log
-import com.emilock.provisioner.ui.ProvisioningCompleteActivity
-import com.emilock.provisioner.utils.PermissionGranter
-import com.emilock.provisioner.utils.ProvisionerConfig
+import com.bsnlock.provisioner.ui.ProvisioningCompleteActivity
+import com.bsnlock.provisioner.utils.PermissionGranter
+import com.bsnlock.provisioner.utils.ProvisionerConfig
 
 class ProvisionerAdminReceiver : DeviceAdminReceiver() {
 

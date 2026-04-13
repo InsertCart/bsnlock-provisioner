@@ -1,13 +1,12 @@
-package com.emilock.provisioner.ui
+package com.bsnlock.provisioner.ui
 
 import android.app.admin.DevicePolicyManager
-import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.emilock.provisioner.receivers.ProvisionerAdminReceiver
-import com.emilock.provisioner.utils.PermissionGranter
+import com.bsnlock.provisioner.receivers.ProvisionerAdminReceiver
+import com.bsnlock.provisioner.utils.PermissionGranter
 
 /**
  * ProvisioningCompleteActivity

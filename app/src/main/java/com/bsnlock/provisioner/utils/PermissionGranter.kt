@@ -1,4 +1,4 @@
-package com.emilock.provisioner.utils
+package com.bsnlock.provisioner.utils
 
 import android.Manifest
 import android.app.admin.DevicePolicyManager
@@ -43,7 +43,7 @@ object PermissionGranter {
      * Grant all required permissions to the EmiLock package silently.
      * Called by the Provisioner (Device Owner) before transferring ownership.
      *
-     * @param targetPackage the package name to grant permissions to (com.emilock.app)
+     * @param targetPackage the package name to grant permissions to (com.bsnlock.app)
      */
     fun grantAllToPackage(
         dpm: DevicePolicyManager,

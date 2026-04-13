@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.emilock.provisioner"
+    namespace = "com.bsnlock.provisioner"
     compileSdk = 35
 
     signingConfigs {
@@ -24,7 +24,7 @@ android {
         }
     }
     defaultConfig {
-        applicationId = "com.emilock.provisioner"
+        applicationId = "com.bsnlock.provisioner"
         minSdk = 28
         targetSdk = 35
         versionCode = 1

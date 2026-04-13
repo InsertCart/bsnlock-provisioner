@@ -1,4 +1,4 @@
-package com.emilock.provisioner.ui
+package com.bsnlock.provisioner.ui
 
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
@@ -15,11 +15,11 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.emilock.provisioner.R
-import com.emilock.provisioner.receivers.ProvisionerAdminReceiver
-import com.emilock.provisioner.utils.OwnershipTransferManager
-import com.emilock.provisioner.utils.PermissionGranter
-import com.emilock.provisioner.utils.ProvisionerConfig
+import com.bsnlock.provisioner.R
+import com.bsnlock.provisioner.receivers.ProvisionerAdminReceiver
+import com.bsnlock.provisioner.utils.OwnershipTransferManager
+import com.bsnlock.provisioner.utils.PermissionGranter
+import com.bsnlock.provisioner.utils.ProvisionerConfig
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

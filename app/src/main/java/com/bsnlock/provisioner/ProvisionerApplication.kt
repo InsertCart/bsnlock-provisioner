@@ -1,4 +1,4 @@
-package com.emilock.provisioner
+package com.bsnlock.provisioner
 
 import android.app.Application
 import android.util.Log

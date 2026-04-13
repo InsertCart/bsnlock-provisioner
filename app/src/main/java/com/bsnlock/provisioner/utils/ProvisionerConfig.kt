@@ -1,11 +1,11 @@
-package com.emilock.provisioner.utils
+package com.bsnlock.provisioner.utils
 
 object ProvisionerConfig {
 
     // ─── EmiLock target app ──────────────────────────────────────────────────
     // Used by: TransferActivity, OwnershipTransferManager, PermissionGranter
-    const val EMILOCK_PACKAGE        = "com.emilock.app"
-    const val EMILOCK_ADMIN_RECEIVER = "com.emilock.app.MyDeviceAdminReceiver"
+    const val EMILOCK_PACKAGE        = "com.bsnlock.app"
+    const val EMILOCK_ADMIN_RECEIVER = "com.bsnlock.app.MyDeviceAdminReceiver"
 
     // ─── EmiLock APK download URL ────────────────────────────────────────────
     // Used by: TransferActivity "Download EmiLock" button
@@ -15,7 +15,7 @@ object ProvisionerConfig {
     const val PROVISIONER_APK_URL   = "https://www.bsnlock.com/bsnlockprovisioner.apk"
     const val PROVISIONER_APK_CHECKSUM = "xNTTnB0pUlk1trCNOBnzlahq2MVItfffCNb0h8ZT3as" // No '=' padding
     const val PROVISIONER_ADMIN_COMPONENT =
-        "com.emilock.provisioner/com.emilock.provisioner.receivers.ProvisionerAdminReceiver"
+        "com.bsnlock.provisioner/com.bsnlock.provisioner.receivers.ProvisionerAdminReceiver"
 
     const val QR_KEY_ADMIN_COMPONENT = "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME"
     const val QR_KEY_APK_URL         = "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION"
